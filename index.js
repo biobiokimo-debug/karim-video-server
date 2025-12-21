@@ -15,6 +15,10 @@ app.use(cors());
 app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ extended: true }));
 
+// Porta e base URL
+const PORT = process.env.PORT || 3000;
+const BASE_URL = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+
 // Cartella per i video finti
 const OUTPUT_DIR = path.join(__dirname, "output");
 if (!fs.existsSync(OUTPUT_DIR)) {
@@ -36,8 +40,7 @@ app.post("/api/short-video", (req, res) => {
     // Invece di generare davvero un video, creiamo un file finto
     fs.writeFileSync(fakeVideoPath, "FAKE_VIDEO_CONTENT");
 
-    const baseUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
-    const videoUrl = `${baseUrl}/videos/${fakeVideoName}`;
+    const videoUrl = `${BASE_URL}/videos/${fakeVideoName}`;
 
     res.json({
       success: true,
@@ -45,7 +48,7 @@ app.post("/api/short-video", (req, res) => {
       message: "Video generated (fake) for testing"
     });
   } catch (err) {
-    console.error(err);
+    console.error("Error in /api/short-video:", err);
     res.status(500).json({ success: false, error: "Video generation failed" });
   }
 });
@@ -53,7 +56,6 @@ app.post("/api/short-video", (req, res) => {
 // Servire i "video" dalla cartella output
 app.use("/videos", express.static(OUTPUT_DIR));
 
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`karim-video-server running on port ${PORT}`);
 });
