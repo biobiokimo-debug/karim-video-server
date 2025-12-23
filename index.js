@@ -29,6 +29,10 @@ if (!fs.existsSync(OUTPUT_DIR)) {
 app.get("/", (req, res) => {
   res.json({ status: "ok", message: "karim-video-server is running" });
 });
+// Health check route per svegliare Render
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
 
 // Endpoint che simula la creazione di un video
 app.post("/api/short-video", (req, res) => {
